@@ -20,6 +20,12 @@
 
 // What kind of pure number programs are there?
 
+function spawnNothing() {
+  return {
+    type: "none",
+  };
+}
+
 function spawnPlayer() {
   return {
     type: "player",
@@ -80,89 +86,70 @@ function spawnAlliedEnemies(num) {
   return team;
 }
 
-function tick(entities) {
-  // create occupied squares
-  let counter1 = 0;
-
-  // Generate hashmap from list of entities
-
+function tick(board) {
+  // create available points
   let points = [];
-  for (let y = 0; y < entities.length; y++) {
-    for (let x = 0; x < entities.length; x++) {
-      points.push([y, x]);
+  for (let y = 0; y < board.length; y++) {
+    for (let x = 0; x < board[0].length; x++) {
+      // by checking none
+      if (board[y][x].type == "none") {
+        points.push([y, x]);
+      }
     }
   }
 
-  while (counter1 != entities.length) {
-    totalX.splice(totalX.indexOf(entities[counter1].x), 1);
-    totalY.splice(totalY.indexOf(entities[counter1].y), 1);
-    counter1++;
-  }
   // generate one enemy of a random type
-  let x = totalX[Math.floor(rand() * (totalX.length - 1))];
-  console.log(Math.floor(rand() * (totalX.length - 1)));
-  let y = totalY[Math.floor(rand() * (totalY.length - 1))];
-  console.log(Math.floor(rand() * (totalY.length - 1)));
-  entities.push(spawnNormalEnemy(x, y));
+  let point = points[Math.floor(rand() * (points.length - 1))];
+  board[point[0]][point[1]] = spawnNormalEnemy();
 
   // player kills one enemy (every other tick)
 
-  let counter = 0;
-  while (counter != entities.length) {
-    // do nothing
-    if (entities[counter].type == "normal") {
-    } else if (entities[counter].type == "mother") {
-      // spawn children
-      let child1 = spawnChild(entities[counter]);
-      let child2 = spawnChild(entities[counter]);
-      entities[counter].push(child1);
-      entities[counter].push(child2);
-    } else if (entities[counter].type == "allied") {
-      // do something
-      let team = spawnAlliedEnemies(3);
-      let new_counter = 0;
-      while (new_counter != 3) {
-        entities.push(team[new_counter]);
+  for (let y = 0; y < board.length; y++) {
+    for (let x = 0; x < board[0].length; x++) {
+      // do nothing
+      if (board[y][x].type == "normal") {
+      } else if (board[y][x].type == "mother") {
+        // spawn children
+        let child1 = spawnChild(board[y][x]);
+        let child2 = spawnChild(board[y][x]);
+        board[y].push(child1);
+        board[y].push(child2);
+      } else if (board[y].type == "allied") {
+        // do something
+        let team = spawnAlliedEnemies(3);
+        for (let i = 0; i < 3; i++) {
+          while (new_counter != 3) {
+            board[y][x] = team[new_counter];
+          }
+        }
+      } else if (board[y].type == "player") {
       }
-    } else if (entities[counter].type == "player") {
     }
-    counter++;
   }
 }
 
-function render(entities) {
-  let counter = 0;
-  while (counter < entities.length) {
-    let symbol = ".";
-    if (entities[counter].type == "normal") {
-      symbol = "n";
-    } else if (entities[counter].type == "mother") {
-      symbol = "m";
-    } else if (entities[counter].type == "child") {
-      symbol = "c";
-    } else if (entities[counter].type == "allied") {
-      symbol = "a";
-    } else if (entities[counter].type == "player") {
-      symbol = "p";
+function render(board) {
+  // Just draws the board
+  for (let y = 0; y < board.length; y++) {
+    let string = "";
+    for (let x = 0; x < board[0].length; x++) {
+      let symbol = ".";
+      if (board[y][x].type == "normal") {
+        symbol = "n";
+      } else if (board[y][x].type == "mother") {
+        symbol = "m";
+      } else if (board[y][x].type == "child") {
+        symbol = "c";
+      } else if (board[y][x].type == "allied") {
+        symbol = "a";
+      } else if (board[y][x].type == "player") {
+        symbol = "p";
+      }
+      string += symbol;
     }
-    console.log(entities[counter].x, entities[counter].y);
-    board[entities[counter].x][entities[counter].y] = symbol;
-    counter++;
+    console.log(string);
   }
 
-  // console.log(board);
-
-  let y2 = 0;
-  while (y2 < 12) {
-    let x = 0;
-    let line = "";
-    while (x < 12) {
-      line += board[y2][x];
-      x++;
-    }
-    console.log(line);
-    y2++;
-  }
   console.log("--------------------------------");
 }
 
@@ -174,27 +161,30 @@ function rand() {
   return state - Math.floor(state);
 }
 
-function run(entities) {
-  tick(entities);
-  render(entities);
-  setTimeout(run, 1000, entities);
+function run(board) {
+  tick(board);
+  render(board);
+  setTimeout(run, 1000, board);
 
   console.log(`${process.memoryUsage().heapUsed / 1024 / 1024} MB used`);
 }
 
 function main() {
-  // loop every second
+  // Create board
   let board = [];
-
   for (let y = 0; y < 12; y++) {
-    for (let x = 0; x < 12; x++) {
-      board[x][y] = ".";
+    let temp = [];
+    for (let x = 0; x < 100; x++) {
+      // Fill it with 'nothing'
+      temp.push(spawnNothing());
     }
+    board.push(temp);
   }
-
-  let player = spawnPlayer(6, 6);
-  entities.push(player);
-  run(entities);
+  // Spawn our player
+  let player = spawnPlayer();
+  board[6][6] = player;
+  // Intiate game loop
+  run(board);
 }
 
 main();
