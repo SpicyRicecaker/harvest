@@ -1,0 +1,7 @@
+// each number, can have `.` and `-` and of course, digits `0->9` the `+` indicates more than 1
+field = { (ASCII_DIGIT | "." | "-")+ }
+// `~` means and then, so 123, (and then) 3123123 (* is any amount)
+record = { field ~ ("," ~ field)* }
+// `SOI` is beginning of file, and then a record and then a newline (CRLF or LF) any number of these and then end of file
+// force parse entire file so we can actually detect a wrong parse
+file = { SOI ~ (record ~ ("\r\n" | "\n"))* ~ EOI }

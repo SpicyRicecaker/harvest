@@ -1,0 +1,16 @@
+// each number, can have `.` and `-` and of course, digits `0->9` the `+` indicates more than 1
+null = { "null" }
+
+bool = { "true" | "false" }
+
+number = { (ASCII_DIGIT | "." | "-")+ }
+
+string = { "\"" ~ * ~ "\"" }
+
+line = { (null | bool | number | string) ~ "," }
+
+array = { "[" ~ (line)* ~ "]" ~ "," }
+
+object = { "{" ~ (string ~ ":" ~ line)* ~ "}" ~ "," }
+
+file = { SOI ~ (object | array)* ~ EOI }

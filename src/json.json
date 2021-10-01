@@ -1,0 +1,41 @@
+{
+  "operators": [
+    {
+      "name": "declaration operator",
+      "value": "let",
+      "description": "allocates memory for an object on the stack or the heap, it in itself is either a copy or a reference to that object"
+    },
+    {
+      "name": "assignment operator",
+      "value": "=",
+      "description": "sets the value of an object"
+    },
+    {
+      "name": "declare function operator",
+      "value": ":",
+      "description": "used to declare a function"
+    },
+    {
+      "name": "block operator",
+      "value": "\t",
+      "description": "used to declare the block in which the function resides in"
+    },
+    {
+      "name": "open operator",
+      "value": "(",
+      "description": "used for various things, like PEMDAS or calling a function"
+    },
+    {
+      "name": "close operator",
+      "value": ")",
+      "description": "used for various things, like PEMDAS or calling a function"
+    }
+  ],
+  "builtins": [
+    {
+      "name": "print function",
+      "value": "say",
+      "description": "basically calls println!() from rust lol",
+    }
+  ]
+}

@@ -180,6 +180,7 @@ function main() {
     }
     board.push(temp);
   }
+  let types = ["normal", "mother", "allied"];
   // Spawn our player
   let player = spawnPlayer();
   board[6][6] = player;
